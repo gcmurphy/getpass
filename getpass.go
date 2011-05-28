@@ -34,7 +34,6 @@ func GetPassWithOptions(prompt string, confirm, max int) (pw string, e os.Error)
 	pw = ""
 	e = nil
 
-	var sz C.int
 	if max <= 0 {
 		e = os.NewError("Invalid argument: maximum password length")
 		return pw, e
@@ -45,10 +44,10 @@ func GetPassWithOptions(prompt string, confirm, max int) (pw string, e os.Error)
 		return pw, e
 	}
 
-	sz = C.int(max)
+	sz  := C.int(max)
 	buf := C.malloc(C.size_t(sz))
-	bptr := (*C.char)(buf)
-	p := C.CString(prompt)
+	bptr:= (*C.char)(buf)
+	p   := C.CString(prompt)
 
 	rc, err := C.UI_UTIL_read_pw_string(bptr, sz, p, C.int(confirm))
 	if rc != 0 {

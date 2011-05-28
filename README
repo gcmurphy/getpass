@@ -1,0 +1,40 @@
+Getpass for GO.
+
+Leverages the good work from the people over at OpenSSL.org via cgo to provide 
+a simple, and cross platform getpass implementation. The API provided essentially
+wraps the UI_UTIL_read_pw_string function call in <openssl/ui.h>.
+
+// Prompt the user for their password.
+func GetPass()(pw string, e os.Error)
+
+// Prompt the user for their password, and get them to confirm it. 
+func GetPassConfirm()(pw string, e os.Error)
+
+// Full customization of the call. Arugments essentially map to UI_UTIL_read_pw_string
+func GetPassWithOptions(prompt string, confirm, max int)(pw string, e os.Error)
+
+Example Usage: 
+
+package main
+
+import (
+    "os"
+    "fmt"
+    "github.com/gcmurphy/getpass"
+)
+
+func main(){
+    fmt.Println("Use default prompt:")
+    pw,e := getpass.GetPass()
+    if e != nil {
+        fmt.Println("ERROR: ", e.String())
+        os.Exit(1)
+    }
+    fmt.Println("Password = ", pw)
+}
+
+
+Install: 
+* Requires: OpenSSL 
+* goinstall github.com/gcmurphy/getpass
+

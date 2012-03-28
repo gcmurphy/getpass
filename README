@@ -35,5 +35,6 @@ func main(){
 
 Install: 
 * Requires: OpenSSL 
-* goinstall github.com/gcmurphy/getpass
+* go get 
+* go build
 

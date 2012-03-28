@@ -10,44 +10,44 @@ package getpass
 #include <openssl/ui.h>
 */
 import "C"
-
-import (
-	"os"
-)
+import "unsafe"
+import "errors"
 
 const DefaultMaxPass = 64
 const DefaultPassPrompt = "Password: "
 
 // Prompt the user for their password.
-func GetPass() (pw string, e os.Error) {
+func GetPass() (pw string, e error) {
 	return GetPassWithOptions(DefaultPassPrompt, 0, DefaultMaxPass)
 }
 
 // Prompt the user for their password, and get them to confirm it. 
-func GetPassConfirm() (pw string, e os.Error) {
+func GetPassConfirm() (pw string, e error) {
 	return GetPassWithOptions(DefaultPassPrompt, 1, DefaultMaxPass)
 }
 
 // Full customization of the call. Arguments essentially map to UI_UTIL_read_pw_string
-func GetPassWithOptions(prompt string, confirm, max int) (pw string, e os.Error) {
+func GetPassWithOptions(prompt string, confirm, max int) (pw string, e error) {
 
 	pw = ""
 	e = nil
 
 	if max <= 0 {
-		e = os.NewError("Invalid argument: maximum password length")
+		e = errors.New("Invalid argument: maximum password length")
 		return pw, e
 	}
 
 	if len(prompt) <= 0 {
-		e = os.NewError("Invalid argument: prompt")
+		e = errors.New("Invalid argument: prompt")
 		return pw, e
 	}
 
-	sz  := C.int(max)
+	sz := C.int(max)
+
 	buf := C.malloc(C.size_t(sz))
-	bptr:= (*C.char)(buf)
-	p   := C.CString(prompt)
+	defer C.free(unsafe.Pointer(buf))
+	bptr := (*C.char)(buf)
+	p := C.CString(prompt)
 
 	rc, err := C.UI_UTIL_read_pw_string(bptr, sz, p, C.int(confirm))
 	if rc != 0 {
@@ -56,6 +56,5 @@ func GetPassWithOptions(prompt string, confirm, max int) (pw string, e os.Error)
 		pw = C.GoString(bptr)
 	}
 
-	C.free(buf)
 	return pw, e
 }

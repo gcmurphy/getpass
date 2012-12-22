@@ -6,6 +6,7 @@ package getpass
 
 /*
 #cgo LDFLAGS: -lcrypto
+#cgo CFLAGS: -Wno-deprecated-declarations
 #include <stdio.h>
 #include <openssl/ui.h>
 */
